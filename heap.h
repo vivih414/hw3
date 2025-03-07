@@ -62,12 +62,13 @@ public:
 
 private:
   /// Add whatever helper functions and data members you need below
-  std::vector<T> element_;
-  int m_;
+  std::vector<T> heap_;
+  size_t m_;
   PComparator comp_;
 
   void heapifyUp(size_t index);
   void heapifyDown(size_t index);
+	size_t getChildIdx(size_t parentIdx, size_t childIdx) const;
 };
 
 // Add implementation of member functions here
@@ -80,8 +81,8 @@ Heap<T, PComparator>::~Heap(){}
 template <typename T, typename PComparator>
 void Heap<T, PComparator>::push(const T& item)
 {
-  element_.push_back(item);
-  heapifyUp(element_.size() - 1);
+  heap_.push_back(item);
+  heapifyUp(heap_.size() - 1);
 }
 
 // We will start top() for you to handle the case of 
@@ -100,7 +101,7 @@ T const & Heap<T,PComparator>::top() const
   // If we get here we know the heap has at least 1 item
   // Add code to return the top element
   else{
-    return element_[0];
+    return heap_[0];
   }
 }
 
@@ -116,21 +117,21 @@ void Heap<T,PComparator>::pop()
     // ================================
     throw std::underflow_error("Heap is empty");
   }
-  std::swap(element_[0], element_.back());
-  element_.pop_back();
+  std::swap(heap_[0], heap_.back());
+  heap_.pop_back();
   heapifyDown(0);
 }
 
 template <typename T, typename PComparator>
 bool Heap<T, PComparator>::empty() const
 {
-  return element_.empty();
+  return heap_.empty();
 }
 
 template <typename T, typename PComparator>
 size_t Heap<T, PComparator>::size() const
 {
-  return element_.size();
+  return heap_.size();
 }
 
 template <typename T, typename PComparator>
@@ -138,9 +139,9 @@ void Heap<T, PComparator>:: heapifyUp(size_t index)
 {
 	while(index > 0){
 		size_t parent = (index - 1) / m_;
-		if(comp_(element_[index], element_[parent]))
+		if(comp_(heap_[index], heap_[parent]))
 		{
-			std::swap(element_[index], element_[parent]);
+			std::swap(heap_[index], heap_[parent]);
 			index = parent;
 		}
 		else{
@@ -152,26 +153,31 @@ void Heap<T, PComparator>:: heapifyUp(size_t index)
 template <typename T, typename PComparator>
 void Heap<T, PComparator>:: heapifyDown(size_t index)
 {
+	size_t size = heap_.size();
   while(true){
 		size_t best = index;
-		for(int i = 0; i < m_; i++)
+
+		for(size_t i = 1; i <= m_; i++)
 		{
-			size_t child = m_ * index + i;
-			if(child < element_.size() && comp_(element_[child], element_[best]))
+			size_t child = getChildIdx(index, i);
+			if(child < size && comp_(heap_[child], heap_[best]))
 			{
 				best = child;
 			}
 		}
-		if(best == index)
+		if(best != index)
 		{
-			break;
-		}
-		else{
-			std::swap(element_[index], element_[best]);
+			std::swap(heap_[index], heap_[best]);
 			index = best;
 		}
+		else{break;}
 	}
 }
 
-#endif
+template <typename T, typename PComparator>
+size_t Heap<T, PComparator>::getChildIdx(size_t parentIdx, size_t childIdx) const
+{
+	return m_ * parentIdx + childIdx;
+}
 
+#endif
