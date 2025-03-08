@@ -154,7 +154,9 @@ template <typename T, typename PComparator>
 void Heap<T, PComparator>:: heapifyDown(size_t index)
 {
 	size_t size = heap_.size();
-  while(true){
+	size_t iterations = 0;
+	size_t max = size;
+  while(iterations++ < max){
 		size_t best = index;
 
 		for(size_t i = 1; i <= m_; i++)
