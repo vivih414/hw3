@@ -1,7 +1,7 @@
 #ifndef CIRCUIT_H
 #define CIRCUIT_H
-#include <vector>
 
+#include <vector>
 #include "../heap.h"
 #include "event.h"
 #include "gate.h"
